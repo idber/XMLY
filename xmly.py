@@ -4,7 +4,7 @@ Created on Fri Nov 16 03:01:08 2018
 
 @author: fuwen
 """
-import requests,re,json
+import requests,json
 
 albumId = 12891461
 pageNum = 5
