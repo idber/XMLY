@@ -3,12 +3,13 @@
 Created on Fri Nov 16 03:01:08 2018
 
 @author: fuwen
+
+https://www.ximalaya.com/revision/play/album?albumId=12891461&pageNum=1
 """
-import requests,json
+from lxml import etree
+import requests,json,re
 
-albumId = 12891461
-pageNum = 5
-
+albumId = 15669623
 
 
 headers = {
@@ -34,6 +35,19 @@ def ChangeFileName(filename):
     filename = filename.replace('|','')
     filename = filename.replace('?','？')
     return filename
+
+# 获取章节数
+def get_zhangjie(albumId):
+    albumUrl = 'http://m.ximalaya.com/20100901/album/%d'% albumId
+    response = requests.get(albumUrl)
+    html = etree.HTML(response.text)
+    jiemu_NO = html.xpath('//*[@id="container"]/div/header/ul/li[2]/a')[0].text
+    jiemu_NO = re.findall(r'\d+',jiemu_NO)[0]
+    page = int(jiemu_NO)//30 +1
+    return page
+
+pageNum = get_zhangjie(albumId)
+
 No = 1
 for page in range(pageNum):
     pageNum = page + 1
@@ -55,3 +69,4 @@ for page in range(pageNum):
         with open(albumName +'.bat','a',encoding='utf-8') as f:
             f.writelines(['aria2c -o '+ str(No).zfill(4)+trackName +'.m4a ' + src,'\n'])
             No+=1
+
